@@ -44,6 +44,7 @@ public partial class App : GameWindow
         GL.Enable(EnableCap.Multisample);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GL.Enable(EnableCap.FramebufferSrgb);
         CursorState = CursorState.Grabbed;
 
         GUI.GUIOnLoad(this);

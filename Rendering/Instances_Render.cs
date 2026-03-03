@@ -1,25 +1,73 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 
-public partial class Stage
+public static class FrameBuffer
 {
-    uint FrameBufferHandle = 0;
-    uint RenderBufferHandle = 0;
-    bool PreRenderDone = false;
+    public static float[] FrameBufferData = {
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
 
-    public void PreRender()
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+
+    // Try changing the fragment shader to get different effects
+    public static Shader FrameBufferShader = new Shader("VertexFB.vs", "FragmentFB.fs");
+    public static uint FrameBufferHandle = 0;
+    public static uint RenderBufferHandle = 0;
+    public static bool PreRenderDone = false;
+    public static int TextureHandle = 0;
+    public static int VAO = 0;
+    public static int VBO = 0;
+
+    public static void PreRender()
     {
+        // Create Frame Buffer
         GL.CreateFramebuffers(1, out FrameBufferHandle);
         GL.BindFramebuffer(FramebufferTarget.Framebuffer, FrameBufferHandle);
-        Texture.GenerateFrameBufferTexture(FrameBufferHandle);
+        TextureHandle = Texture.GenerateFrameBufferTexture(FrameBufferHandle);
 
-        GL.CreateRenderbuffers(1, out RenderBufferHandle);
-        GL.NamedRenderbufferStorage(RenderBufferHandle, RenderbufferStorage.Depth24Stencil8, 1920, 1080);
-        GL.NamedFramebufferRenderbuffer(FrameBufferHandle, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, RenderBufferHandle);
+        // Set up framebuffer VAO
+        GL.CreateVertexArrays(1, out VAO);
+        GL.CreateBuffers(1, out VBO);
+
+        // Upload Frame Buffer VBO
+        GL.NamedBufferData(VBO, FrameBufferData.Length * sizeof(float), FrameBufferData, BufferUsageHint.StaticDraw);
+        GL.VertexArrayVertexBuffer(VAO, 0, VBO, IntPtr.Zero, sizeof(float) * 4);
+
+        // Set Up XY Pos
+        GL.EnableVertexArrayAttrib(VAO, 0);
+        GL.VertexArrayAttribFormat(VAO,0,2,VertexAttribType.Float,false,0);
+        GL.VertexArrayAttribBinding(VAO, 0, 0);
+
+        // Set up Texture UV
+        GL.EnableVertexArrayAttrib(VAO, 1);
+        GL.VertexArrayAttribFormat(VAO,1,2,VertexAttribType.Float,false,sizeof(float) * 2);
+        GL.VertexArrayAttribBinding(VAO, 1, 0);
+
+        PreRenderDone = true;
     }
+}
+
+public partial class Stage
+{
 
     public void Render()
     {
+        if (!FrameBuffer.PreRenderDone)
+        {
+            FrameBuffer.PreRender();
+        }
+
+        // Bind Frame Buffer
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, FrameBuffer.FrameBufferHandle);
+        GL.Viewport(0, 0, 1920, 1080);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+        GL.Enable(EnableCap.DepthTest);
+
         Camera.UpdateCameraViewMatrix();
         Camera.RefreshUniformData();
 
@@ -61,6 +109,16 @@ public partial class Stage
                 GL.DrawElements(BeginMode.Triangles, (int)RenderVars.EBOCount, DrawElementsType.UnsignedInt, 0);
             }
         }
+
+        // bind default Frame Buffer
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+        // Render Frame Buffer
+        FrameBuffer.FrameBufferShader.Use();
+        GL.BindVertexArray(FrameBuffer.VAO);
+        GL.Disable(EnableCap.DepthTest);
+        GL.BindTexture(TextureTarget.Texture2D, FrameBuffer.TextureHandle);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
     }
 }
 public struct RenderVars
