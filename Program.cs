@@ -17,6 +17,8 @@ class EntryPoint()
             Vsync = OpenTK.Windowing.Common.VSyncMode.On
         });
 
+        Texture.CreateSafeDefault();
+
         Stage MyStage = new();
         MyStage.Instances.Add(new Instance {
             Position = new Vector3(0,0,-5),
@@ -36,18 +38,19 @@ class EntryPoint()
         MyStage.Instances.Add(new Instance
         {
             Position = new Vector3(0, -2, -5),
-            Scale = new Vector3(1, 1, 1),
+            Scale = new Vector3(10, 1, 10),
             Rotation = new Quaternion(0, 0, 0),
             Model = new Model("Floor\\Floor.obj")
         });
 
-
         Light light = new Light(
-            new Vector3(5.0f, 0.0f, 0.0f),
+            new Vector3(0.0f, 3.0f, 1.0f),
             new Vector3(0.1f, 0.1f, 0.1f),
             new Vector3(0.8f, 0.8f, 0.8f),
             new Vector3(0.5f, 0.5f, 0.5f)
         );
+
+        MyStage.light = light;
 
         App.RenderStage = MyStage;  
 

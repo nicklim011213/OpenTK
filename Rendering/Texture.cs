@@ -15,6 +15,8 @@ public static class Texture
 
         GL.TextureParameter(TextureHandle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
         GL.TextureParameter(TextureHandle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.TextureParameter(TextureHandle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+        GL.TextureParameter(TextureHandle, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         GL.GenerateTextureMipmap(TextureHandle);
         TextureLookup.TryAdd(Filepath, TextureHandle);
     }
@@ -63,5 +65,20 @@ public static class Texture
 
         // Return the color buffer handle
         return TextureHandle;
+    }
+
+    public static void CreateSafeDefault()
+    {
+        ImageResult TextureFile = ImageResult.FromStream(File.OpenRead("Assets\\Models\\Default.png"), ColorComponents.RedGreenBlueAlpha);
+        int TextureHandle = -1;
+        GL.CreateTextures(TextureTarget.Texture2D, 1, out TextureHandle);
+        GL.TextureStorage2D(TextureHandle, 1, SizedInternalFormat.Srgb8Alpha8, TextureFile.Width, TextureFile.Height);
+        GL.TextureSubImage2D(TextureHandle, 0, 0, 0, TextureFile.Width, TextureFile.Height, PixelFormat.Rgba, PixelType.UnsignedByte, TextureFile.Data);
+
+        GL.TextureParameter(TextureHandle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TextureParameter(TextureHandle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.GenerateTextureMipmap(TextureHandle);
+
+        TextureLookup.TryAdd("Default", TextureHandle);
     }
 }

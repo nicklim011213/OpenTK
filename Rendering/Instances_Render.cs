@@ -54,6 +54,12 @@ public static class FrameBuffer
 
 public partial class Stage
 {
+    uint ShadowMapFBHandle;
+    uint DepthTextureHandle;
+    bool ShadowMapPassPre = false;
+    Shader ShadowMappingShader = new Shader("Depth.vs", "Depth.fs");
+    public Light light;
+
 
     public void Render()
     {
@@ -61,12 +67,18 @@ public partial class Stage
         {
             FrameBuffer.PreRender();
         }
+        ShadowMappingPass();
 
         // Bind Frame Buffer
         GL.BindFramebuffer(FramebufferTarget.Framebuffer, FrameBuffer.FrameBufferHandle);
         GL.Viewport(0, 0, 1920, 1080);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         GL.Enable(EnableCap.DepthTest);
+
+        // Light Space Matrix
+        Matrix4 LightProj = Matrix4.CreateOrthographic(50.0f, 50.0f, 0.1f, 100.0f);
+        Matrix4 LightView = Matrix4.LookAt(light.Pos, new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f));
+        Matrix4 LightSpaceMatrix = LightView * LightProj;
 
         Camera.UpdateCameraViewMatrix();
         Camera.RefreshUniformData();
@@ -76,6 +88,7 @@ public partial class Stage
             // Select Shader
             Instance.Model.FallBackShader.Use();
             var Shader = Instance.Model.FallBackShader;
+            GL.ProgramUniformMatrix4(Shader.Handle, GL.GetUniformLocation(Shader.Handle, "LightSpaceMatrix"), false, ref LightSpaceMatrix);
 
             // Shader Transform Uniform
             var TransformMatrix = Matrix4.CreateScale(Instance.Scale) * Matrix4.CreateFromQuaternion(Instance.Rotation) * Matrix4.CreateTranslation(Instance.Position);
@@ -88,21 +101,9 @@ public partial class Stage
                 var RenderVars = Instance.Model.RenderVars[RenderVarIndex];
 
                 // Set Mat Textures
-                GL.ProgramUniform1(Shader.Handle, Shader.MatDiffuseLoc, 0);
-                GL.ProgramUniform1(Shader.Handle, Shader.MatSpecularLoc, 1);
+                GL.BindTextureUnit(0, Mesh.DiffuseFilePath != null ? Texture.TextureLookup[Mesh.DiffuseFilePath] : Texture.TextureLookup["Default"]);
+                GL.BindTextureUnit(1, Mesh.SpecularFilePath != null ? Texture.TextureLookup[Mesh.SpecularFilePath] : Texture.TextureLookup["Default"]);
                 GL.ProgramUniform1(Shader.Handle, Shader.MatShininessLoc, 32.0f);
-
-                // If it has a diffuse file. load it
-                if (Mesh.DiffuseFilePath is string DiffuseFilePath)
-                {
-                    Texture.CreateOrRetrieveTexture(DiffuseFilePath, 0);
-                }
-
-                // If it has Specular file, load it
-                if (Mesh.SpecularFilePath is string SpecularFilePath)
-                {
-                    Texture.CreateOrRetrieveTexture(SpecularFilePath, 1);
-                }
 
                 // Draw Mesh
                 GL.BindVertexArray(RenderVars.VAO);
@@ -117,8 +118,89 @@ public partial class Stage
         FrameBuffer.FrameBufferShader.Use();
         GL.BindVertexArray(FrameBuffer.VAO);
         GL.Disable(EnableCap.DepthTest);
-        GL.BindTexture(TextureTarget.Texture2D, FrameBuffer.TextureHandle);
+        GL.BindTextureUnit(0, FrameBuffer.TextureHandle);
         GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+    }
+
+    public void ShadowMappingPass()
+    {
+        if (!ShadowMapPassPre)
+        {
+            ShadowMappingInit();
+        }
+
+        // Bind Frame Buffer with Depth Attachment
+        GL.Viewport(0, 0, 2048, 2048);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, ShadowMapFBHandle);
+        GL.DrawBuffer(DrawBufferMode.None);
+        GL.ReadBuffer(ReadBufferMode.None);
+        GL.Clear(ClearBufferMask.DepthBufferBit);
+        GL.Enable(EnableCap.DepthTest);
+
+        // Set Up Light Matricies
+        //Matrix4 LightProj = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), 1920f / 1080f, 0.1f, 100.0f);
+        Matrix4 LightProj = Matrix4.CreateOrthographic(40.0f, 40.0f, 0.1f, 100.0f);
+        Matrix4 LightView = Matrix4.LookAt(light.Pos, new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f));
+        Matrix4 LightSpaceMatrix = LightView * LightProj;
+
+        ShadowMappingShader.Use();
+        GL.ProgramUniformMatrix4(ShadowMappingShader.Handle, GL.GetUniformLocation(ShadowMappingShader.Handle, "lightSpaceMatrix"), false, ref LightSpaceMatrix);
+
+        GL.CullFace(TriangleFace.Front);
+
+        // Render Scene with FBO Attached
+        foreach (var Instance in Instances)
+        {
+            var TransformMatrix = Matrix4.CreateScale(Instance.Scale) * Matrix4.CreateFromQuaternion(Instance.Rotation) * Matrix4.CreateTranslation(Instance.Position);
+            GL.ProgramUniformMatrix4(ShadowMappingShader.Handle, GL.GetUniformLocation(ShadowMappingShader.Handle, "model"), false, ref TransformMatrix);
+
+            for (int RenderVarIndex = 0; RenderVarIndex != Instance.Model.RenderVars.Count; RenderVarIndex++)
+            {
+                var Mesh = Instance.Model.Meshes[RenderVarIndex];
+                var RenderVars = Instance.Model.RenderVars[RenderVarIndex];
+
+                // Bind Diffuse for alpha Testing
+                GL.BindTextureUnit(0, Mesh.DiffuseFilePath != null ? Texture.TextureLookup[Mesh.DiffuseFilePath] : Texture.TextureLookup["Default"]);
+
+                // Draw mesh (no textures needed for depth pass)
+                GL.BindVertexArray(RenderVars.VAO);
+                GL.DrawElements(BeginMode.Triangles, (int)RenderVars.EBOCount, DrawElementsType.UnsignedInt, 0);
+            }
+        }
+
+        GL.CullFace(TriangleFace.Back);
+
+        // unbind and continue
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+        // Bind texture for future use
+        GL.BindTextureUnit(2, DepthTextureHandle);
+
+        // Clean up before calling render
+        GL.Viewport(0, 0, 1920, 1080);
+        GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+    }
+
+    public void ShadowMappingInit()
+    {
+        // Create a FBO
+        GL.CreateFramebuffers(1, out ShadowMapFBHandle);
+
+        // Create a depth map texture
+        GL.CreateTextures(TextureTarget.Texture2D, 1, out DepthTextureHandle);
+        GL.TextureStorage2D(DepthTextureHandle, 1, SizedInternalFormat.DepthComponent24, 2048, 2048);
+        GL.NamedFramebufferTexture(ShadowMapFBHandle, FramebufferAttachment.DepthAttachment, DepthTextureHandle, 0);
+
+        // Shadow Mapping Texture Parameters
+        GL.TextureParameter(DepthTextureHandle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+        GL.TextureParameter(DepthTextureHandle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        GL.TextureParameter(DepthTextureHandle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+        GL.TextureParameter(DepthTextureHandle, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+        float[] borderColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+        GL.TextureParameter(DepthTextureHandle, TextureParameterName.TextureBorderColor, borderColor);
+
+        // Set flag
+        ShadowMapPassPre = true;
     }
 }
 public struct RenderVars

@@ -7,9 +7,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 public class Shader
 {
     public int Handle = 0;
-
-    public int MatDiffuseLoc = -1;
-    public int MatSpecularLoc = -1;
     public int MatShininessLoc = -1;
 
     public Shader(string VertexShaderFile, string FragmentShaderFile)
@@ -63,8 +60,6 @@ public class Shader
 
     private void InitLocations()
     {
-        MatDiffuseLoc = GL.GetUniformLocation(this.Handle, "material.Diffuse");
-        MatSpecularLoc = GL.GetUniformLocation(this.Handle, "material.Specular");
-        MatShininessLoc = GL.GetUniformLocation(this.Handle, "material.Shininess");
+        MatShininessLoc = GL.GetUniformLocation(this.Handle, "Shininess");
     }
 }

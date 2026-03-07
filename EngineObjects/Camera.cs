@@ -6,7 +6,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 public static class Camera
 {
     // Direction Vectors
-    public static Vector3 Pos = new(0.0f, 0.0f, -10.0f);
+    public static Vector3 Pos = new(0.0f, 0.0f, 1.0f);
     private static Vector3 Front = -Vector3.UnitZ;
     private static Vector3 Up = Vector3.UnitY;
     private static Vector3 Right = Vector3.UnitX;

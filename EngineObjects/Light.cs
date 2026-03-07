@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 public class Light
 {
     public int BufferHandle;
+    public Vector3 Pos;
     public Light(Vector3 Pos, Vector3 Ambient, Vector3 Diffuse, Vector3 Specular)
     {
         GL.CreateBuffers(1, out BufferHandle);
@@ -19,6 +20,8 @@ public class Light
             Specular = Specular
         };
         float[] Data = LightInfo.Data();
+
+        this.Pos = Pos;
 
         GL.NamedBufferStorage(BufferHandle, sizeof(float) * 16, Data, BufferStorageFlags.None);
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, BufferHandle);
