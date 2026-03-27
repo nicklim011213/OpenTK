@@ -1,9 +1,10 @@
-﻿using OpenTK.Windowing.Desktop;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+using System.Runtime.InteropServices;
 
-class EntryPoint()
+public static class EntryPoint
 {
     static void Main()
     {
@@ -11,48 +12,24 @@ class EntryPoint()
         {
             ClientSize = (1920, 1080),
             Title = "ExampleWindow",
-            APIVersion = new Version(4, 5),
+            APIVersion = new Version(4, 6),
             Profile = ContextProfile.Core,
             NumberOfSamples = 4,
-            Vsync = OpenTK.Windowing.Common.VSyncMode.On
+            Vsync = OpenTK.Windowing.Common.VSyncMode.On,
+            Flags = ContextFlags.Debug,
         });
 
-        Texture.CreateSafeDefault();
-
-        Stage MyStage = new();
-        MyStage.Instances.Add(new Instance {
-            Position = new Vector3(0,0,-5),
-            Scale = new Vector3(1,1,1),
-            Rotation = new Quaternion(0,0,0),
-            Model = new Model("backpack\\backpack.obj")
-        });
-
-        MyStage.Instances.Add(new Instance
+        Console.WriteLine("=========INFO=========");
+        Console.WriteLine("Renderer:   " + GL.GetString(StringName.Renderer));
+        Console.WriteLine("Vendor:     " + GL.GetString(StringName.Vendor));
+        Console.WriteLine("Version:    " + GL.GetString(StringName.Version));
+        Console.WriteLine("Extensions: ");
+        int Ext = GL.GetInteger(GetPName.NumExtensions);
+        for (int i = 0; i != Ext; ++i)
         {
-            Position = new Vector3(7, -2, -5),
-            Scale = new Vector3(2, 2, 2),
-            Rotation = new Quaternion(0, 0, 0),
-            Model = new Model("Tree\\Tree.obj")
-        });
-
-        MyStage.Instances.Add(new Instance
-        {
-            Position = new Vector3(0, -2, -5),
-            Scale = new Vector3(10, 1, 10),
-            Rotation = new Quaternion(0, 0, 0),
-            Model = new Model("Floor\\Floor.obj")
-        });
-
-        Light light = new Light(
-            new Vector3(0.0f, 3.0f, 1.0f),
-            new Vector3(0.1f, 0.1f, 0.1f),
-            new Vector3(0.8f, 0.8f, 0.8f),
-            new Vector3(0.5f, 0.5f, 0.5f)
-        );
-
-        MyStage.light = light;
-
-        App.RenderStage = MyStage;  
+            Console.WriteLine("            " + GL.GetString(StringNameIndexed.Extensions, i));
+        }
+        Console.WriteLine("======================");
 
         Application.Run();
     }

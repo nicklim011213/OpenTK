@@ -1,52 +1,22 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 public class Light
 {
+    [JsonIgnore]
     public int BufferHandle;
     public Vector3 Pos;
+    public Vector3 Ambient;
+    public Vector3 Diffuse;
+    public Vector3 Specular;
+
     public Light(Vector3 Pos, Vector3 Ambient, Vector3 Diffuse, Vector3 Specular)
     {
-        GL.CreateBuffers(1, out BufferHandle);
-        LightData LightInfo = new LightData
-        {
-            Pos = Pos,
-            Ambient = Ambient,
-            Diffuse = Diffuse,
-            Specular = Specular
-        };
-        float[] Data = LightInfo.Data();
-
         this.Pos = Pos;
-
-        GL.NamedBufferStorage(BufferHandle, sizeof(float) * 16, Data, BufferStorageFlags.None);
-        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, BufferHandle);
+        this.Ambient = Ambient;
+        this.Diffuse = Diffuse;
+        this.Specular = Specular;
     }
-}
-
-[StructLayout(LayoutKind.Sequential)]
-public struct LightData
-{
-    public Vector3 Pos;
-    private float Pad1 = 0.0f;
-    public Vector3 Ambient;
-    private float Pad2 = 0.0f;
-    public Vector3 Diffuse;
-    private float Pad3 = 0.0f;
-    public Vector3 Specular;
-    private float Pad4 = 0.0f;
-
-    public float[] Data()
-    {
-        return new float[] { Pos.X, Pos.Y, Pos.Z, Pad1,
-                             Ambient.X, Ambient.Y, Ambient.Z, Pad2,
-                             Diffuse.X, Diffuse.Y, Diffuse.Z, Pad3,
-                             Specular.X, Specular.Y, Specular.Z, Pad4 };
-    }
-
-    public LightData() { }
 }
