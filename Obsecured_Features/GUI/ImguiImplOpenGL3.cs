@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#pragma warning disable
 namespace Dear_ImGui_Sample.Backends
 {
     public unsafe static class ImguiImplOpenGL3
@@ -32,7 +33,8 @@ namespace Dear_ImGui_Sample.Backends
             }
         }
 
-        struct RendererData {
+        struct RendererData
+        {
             public int FontTexture;
             public int ShaderHandle;
             public int UniformLocationTex;
@@ -146,8 +148,8 @@ namespace Dear_ImGui_Sample.Backends
             GL.EnableVertexAttribArray(bd->AttribLocationVtxPos);
             GL.EnableVertexAttribArray(bd->AttribLocationVtxUV);
             GL.EnableVertexAttribArray(bd->AttribLocationVtxColor);
-            GL.VertexAttribPointer(bd->AttribLocationVtxPos, 2, VertexAttribPointerType.Float, false, sizeof(ImDrawVert),  0);
-            GL.VertexAttribPointer(bd->AttribLocationVtxUV, 2, VertexAttribPointerType.Float, false, sizeof(ImDrawVert),  8);
+            GL.VertexAttribPointer(bd->AttribLocationVtxPos, 2, VertexAttribPointerType.Float, false, sizeof(ImDrawVert), 0);
+            GL.VertexAttribPointer(bd->AttribLocationVtxUV, 2, VertexAttribPointerType.Float, false, sizeof(ImDrawVert), 8);
             GL.VertexAttribPointer(bd->AttribLocationVtxColor, 4, VertexAttribPointerType.UnsignedByte, true, sizeof(ImDrawVert), 16);
         }
 
@@ -220,15 +222,15 @@ namespace Dear_ImGui_Sample.Backends
                     }
                     else
                     {
-                        Vector2 clip_min = new((cmd.ClipRect.X -clipOff.X) *clipScale.X, (cmd.ClipRect.Y - clipOff.Y) * clipScale.Y);
-                        Vector2 clip_max = new((cmd.ClipRect.Z -clipOff.X) *clipScale.X, (cmd.ClipRect.W - clipOff.Y) * clipScale.Y);
+                        Vector2 clip_min = new((cmd.ClipRect.X - clipOff.X) * clipScale.X, (cmd.ClipRect.Y - clipOff.Y) * clipScale.Y);
+                        Vector2 clip_max = new((cmd.ClipRect.Z - clipOff.X) * clipScale.X, (cmd.ClipRect.W - clipOff.Y) * clipScale.Y);
                         if (clip_max.X <= clip_min.X || clip_max.Y <= clip_min.Y)
                             continue;
 
                         GL.Scissor((int)clip_min.X, (int)((float)fbHeight - clip_max.Y), (int)(clip_max.X - clip_min.X), (int)(clip_max.Y - clip_min.Y));
 
                         GL.BindTexture(TextureTarget.Texture2D, (int)cmdPtr.GetTexID());
-                        
+
                         GL.DrawElementsBaseVertex(PrimitiveType.Triangles, (int)cmd.ElemCount, DrawElementsType.UnsignedShort, (int)(cmd.IdxOffset * sizeof(ushort)), (int)cmd.VtxOffset);
                     }
                 }
@@ -596,3 +598,4 @@ namespace Dear_ImGui_Sample.Backends
         }
     }
 }
+#pragma warning restore

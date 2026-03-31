@@ -44,7 +44,7 @@ void main()
 	MeshDrawData CurrentDraw = MeshDraw[vs_out.DrawID];
 	sampler2D DiffuseSampler = sampler2D(CurrentDraw.DiffuseTexture);
 
-	if (texture(DiffuseSampler, vs_out.TexCoord).a < 0.2)
+	if (texture(DiffuseSampler, vs_out.TexCoord).a < 0.5)
 	{
 		discard;
 	}

@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using System.Runtime.InteropServices;
+using OpenTKEngine.Exposed_Features.Runtime;
+
 
 public static class EntryPoint
 {
@@ -35,8 +35,9 @@ public static class EntryPoint
     }
 }
 
-partial class App(GameWindowSettings? gameWindowSettings, NativeWindowSettings? nativeWindowSettings): 
-              GameWindow(gameWindowSettings, nativeWindowSettings)
+namespace OpenTKEngine.Exposed_Features.Runtime
 {
-
+    partial class App(GameWindowSettings? gameWindowSettings, NativeWindowSettings? nativeWindowSettings) :
+              GameWindow(gameWindowSettings, nativeWindowSettings)
+    { }
 }

@@ -108,7 +108,7 @@ void main()
 
 	// Get Diffuse and Specular Texture Data
     vec4 AlbedoMap = texture(DiffuseSampler, vs_out.TexCoord);
-    if (AlbedoMap.a < 0.2)
+    if (AlbedoMap.a < 0.5)
         discard;
 	vec4 SpecMap = texture(SpecularSampler, vs_out.TexCoord);
 
@@ -132,9 +132,6 @@ void main()
 
 	// Result
     vec3 result = A + (1.0 - ShStr) * (D + S);
-	
-	// Gamma Correction
-	result = pow(result, vec3(1.0/2.2));
 	
     FragColor = vec4(result, AlbedoMap.a);
 }
