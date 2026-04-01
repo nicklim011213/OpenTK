@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTKEngine.Exposed_Features.EngineObjects;
 
-namespace OpenTKEngine.Obsecured_Features.Rendering
+namespace OpenTKEngine.Obscured_Features.Rendering
 {
     public static class Camera_Renderer
     {

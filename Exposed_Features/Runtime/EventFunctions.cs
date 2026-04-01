@@ -2,10 +2,10 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using OpenTKEngine.Obsecured_Features.Rendering;
-using OpenTKEngine.Obsecured_Features.IO;
-using OpenTKEngine.Obsecured_Features.Assets;
-using OpenTKEngine.Obsecured_Features.GUI;
+using OpenTKEngine.Obscured_Features.Rendering;
+using OpenTKEngine.Obscured_Features.IO;
+using OpenTKEngine.Obscured_Features.Assets;
+using OpenTKEngine.Obscured_Features.GUI;
 
 namespace OpenTKEngine.Exposed_Features.Runtime
 {

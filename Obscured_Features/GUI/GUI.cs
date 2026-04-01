@@ -2,7 +2,7 @@
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
-namespace OpenTKEngine.Obsecured_Features.GUI
+namespace OpenTKEngine.Obscured_Features.GUI
 {
     public static class GUI
     {

@@ -1,6 +1,6 @@
 ﻿using Assimp;
 
-namespace OpenTKEngine.Obsecured_Features.Assets
+namespace OpenTKEngine.Obscured_Features.Assets
 {
     static class ObjectLoading
     {

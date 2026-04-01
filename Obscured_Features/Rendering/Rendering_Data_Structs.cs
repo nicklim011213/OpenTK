@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using System.Runtime.InteropServices;
 
-namespace OpenTKEngine.Obsecured_Features.Rendering
+namespace OpenTKEngine.Obscured_Features.Rendering
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct DrawCommand

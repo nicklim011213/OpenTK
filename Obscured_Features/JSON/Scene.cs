@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using OpenTKEngine.Exposed_Features.EngineObjects;
 
-namespace OpenTKEngine.Obsecured_Features.JSON
+namespace OpenTKEngine.Obscured_Features.JSON
 {
     public class StageSerlization
     {

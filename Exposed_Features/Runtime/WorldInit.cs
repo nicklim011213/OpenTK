@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using OpenTKEngine.Exposed_Features.EngineObjects;
-using OpenTKEngine.Obsecured_Features.Rendering;
-using OpenTKEngine.Obsecured_Features.Assets;
+using OpenTKEngine.Obscured_Features.Rendering;
+using OpenTKEngine.Obscured_Features.Assets;
 
 namespace OpenTKEngine.Exposed_Features.Runtime
 {

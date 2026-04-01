@@ -14,7 +14,7 @@ namespace OpenTKEngine.Exposed_Features.EngineObjects
         public static float CamSpeed = 5.0f;
         public static float Sensativity = 0.002f;
 
-        // Obsecured Values
+        // Obscured Values
         internal static Vector3 Front = -Vector3.UnitZ;
         internal static Vector3 Up = Vector3.UnitY;
         internal static Vector3 Right = Vector3.UnitX;

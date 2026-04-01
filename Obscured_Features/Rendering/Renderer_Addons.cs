@@ -1,8 +1,8 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
-using OpenTKEngine.Obsecured_Features.Assets;
+using OpenTKEngine.Obscured_Features.Assets;
 
-namespace OpenTKEngine.Obsecured_Features.Rendering
+namespace OpenTKEngine.Obscured_Features.Rendering
 {
     public class FrameBuffer
     {

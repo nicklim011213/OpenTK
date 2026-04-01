@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OpenTKEngine.Obsecured_Features.JSON
+namespace OpenTKEngine.Obscured_Features.JSON
 {
     public class JSONVec3 : JsonConverter<Vector3>
     {

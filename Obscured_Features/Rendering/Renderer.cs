@@ -2,10 +2,10 @@
 using OpenTK.Mathematics;
 using System.Runtime.InteropServices;
 using OpenTKEngine.Exposed_Features.EngineObjects;
-using OpenTKEngine.Obsecured_Features.Assets;
-using OpenTKEngine.Obsecured_Features.IO;
+using OpenTKEngine.Obscured_Features.Assets;
+using OpenTKEngine.Obscured_Features.IO;
 
-namespace OpenTKEngine.Obsecured_Features.Rendering
+namespace OpenTKEngine.Obscured_Features.Rendering
 {
     public class Renderer
     {

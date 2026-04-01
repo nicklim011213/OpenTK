@@ -4,7 +4,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTKEngine.Exposed_Features.EngineObjects;
 
 
-namespace OpenTKEngine.Obsecured_Features.IO
+namespace OpenTKEngine.Obscured_Features.IO
 {
     public static class Camera_Input
     {

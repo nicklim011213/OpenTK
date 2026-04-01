@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using System.Text.Json.Serialization;
-using OpenTKEngine.Obsecured_Features.Rendering;
+using OpenTKEngine.Obscured_Features.Rendering;
 
 namespace OpenTKEngine.Exposed_Features.EngineObjects
 {

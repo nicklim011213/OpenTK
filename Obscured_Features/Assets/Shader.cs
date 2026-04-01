@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
-namespace OpenTKEngine.Obsecured_Features.Assets
+namespace OpenTKEngine.Obscured_Features.Assets
 {
     public class Shader
     {

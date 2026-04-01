@@ -1,7 +1,7 @@
 ﻿using Assimp;
 using OpenTK.Mathematics;
 
-namespace OpenTKEngine.Obsecured_Features.TypeConversion
+namespace OpenTKEngine.Obscured_Features.TypeConversion
 {
     public static class ColorVectorConversion
     {

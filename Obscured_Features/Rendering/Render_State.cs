@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
 
-namespace OpenTKEngine.Obsecured_Features.Rendering
+namespace OpenTKEngine.Obscured_Features.Rendering
 {
     public static class GeometryBuffer
     {
